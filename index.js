@@ -45,9 +45,6 @@ async function run() {
             const category = req.query.category; // Get category from query params
             const name = req.query.productname; // Get category from query params
             
-
-
-
             let query = {};
 
             if (brand && brand !== 'null') {
