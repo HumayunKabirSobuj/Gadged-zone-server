@@ -10,7 +10,7 @@ app.use(
         origin: [
             "http://localhost:5173",
             "http://localhost:5174",
-            // "https://assignment-12-humayun-ph-b9.netlify.app",
+            
         ],
         credentials: true,
     })
@@ -46,7 +46,7 @@ async function run() {
             const brand = req.query.brand; // Get brand from query params
             const category = req.query.category; // Get category from query params
             const name = req.query.productname; // Get category from query params
-            console.log({ brand, category, name });
+            // console.log({ brand, category, name });
             // const productname=name.toLocaleLowerCase()
 
 
@@ -69,11 +69,41 @@ async function run() {
 
             const page = parseInt(req.query.page);
             const size = parseInt(req.query.size);
-            const allProducts = await phonesCollection.find()
 
-                .skip(page * size)
-                .limit(size)
-                .toArray();
+
+
+            // Initialize sorting objects
+            let price_query = {};
+            let sortQuery = {};
+
+            // Sort by price
+            const sort = req.query.sort || "";
+            if (sort === "asc") {
+                price_query.price = 1; // Ascending order
+            } else if (sort === "dsc") {
+                price_query.price = -1; // Descending order
+            }
+
+            // Sort by date
+            const DateSort = req.query.DateSort || "";
+            if (DateSort === "newest") {
+                sortQuery.creationdate = -1; // Newest first
+            } else if (DateSort === "oldest") {
+                sortQuery.creationdate = 1; // Oldest first
+            }
+
+            // Merge sorting objects
+            const finalSortQuery = { ...price_query, ...sortQuery };
+
+            // Filter by price range
+            const minPrice = parseFloat(req.query.minPrice) || 0;
+            const maxPrice = parseFloat(req.query.maxPrice) || 1000;
+            query.price = { $gte: minPrice, $lte: maxPrice };
+
+            // console.log(minPrice, maxPrice)
+
+
+
 
 
 
@@ -81,9 +111,15 @@ async function run() {
 
             try {
 
+                const allProducts = await phonesCollection.find(query)
+                    .sort(finalSortQuery)
+                    .skip(page * size)
+                    .limit(size)
+                    .toArray();
+
                 // const result = await phonesCollection.find(query).toArray();
                 // res.send(result);
-                const count = await phonesCollection.countDocuments()
+                const count = await phonesCollection.countDocuments(query)
                 // console.log(allProducts, count)
 
                 res.send({
@@ -91,7 +127,7 @@ async function run() {
                     count: count
                 })
             } catch (error) {
-                console.error(error);
+                // console.error(error);
                 res.status(500).send({ message: "Internal Server Error" });
             }
         });
@@ -102,9 +138,9 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
 
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
