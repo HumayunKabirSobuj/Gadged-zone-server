@@ -62,8 +62,6 @@ async function run() {
             const page = parseInt(req.query.page);
             const size = parseInt(req.query.size);
 
-
-
             // Initialize sorting objects
             let price_query = {};
             let sortQuery = {};
