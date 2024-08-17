@@ -44,8 +44,7 @@ async function run() {
             const brand = req.query.brand; // Get brand from query params
             const category = req.query.category; // Get category from query params
             const name = req.query.productname; // Get category from query params
-            // console.log({ brand, category, name });
-            // const productname=name.toLocaleLowerCase()
+            
 
 
 
