@@ -59,8 +59,6 @@ async function run() {
                 query.productname = { $regex: name, $options: "i" };
             }
 
-
-
             const page = parseInt(req.query.page);
             const size = parseInt(req.query.size);
 
