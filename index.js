@@ -17,6 +17,7 @@ app.use(
     })
 );
 
+
 app.use(express.json())
 // console.log(process.env.DB_USER)
 // console.log(process.env.DB_PASS)
